@@ -43,6 +43,13 @@ namespace AuthSample
             {
                 app.UseDeveloperExceptionPage();
             }
+            // 可參考，因為沒設定，暫時不使用
+            // [[小菜一碟] 在 ASP.NET Core MVC 自訂 ExceptionHandler | 軟體主廚的程式料理廚房 - 點部落](https://www.dotblogs.com.tw/supershowwei/2021/04/14/185800)
+            //else if (env.IsStaging() || env.IsProduction() || env.IsEnvironment("UAT"))
+            //{
+            //    app.UseExceptionHandler("/Error");
+            //    app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            //}
 
             app.UseRouting();
 
