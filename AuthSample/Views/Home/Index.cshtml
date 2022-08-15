@@ -1,8 +1,22 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> _signInManager
+
 @{
 }
 
 
-Index
+@if (_signInManager.IsSignedIn(User))
+{
+    <form method="post" asp-controller="home" asp-action="logout">
+        @User.Identity.Name <button>登出</button>
+    </form>
+}
+else
+{
+    <a asp-controller="account" asp-action="register">註冊</a>
+}
+    Index
