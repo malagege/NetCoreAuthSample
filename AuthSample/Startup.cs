@@ -1,3 +1,4 @@
+using AuthSample.CustomMiddlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,7 @@ namespace AuthSample
             });
 
             services.AddIdentity<IdentityUser, IdentityRole>()
+                    .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     .AddEntityFrameworkStores<AppDbContext>();
 
 
