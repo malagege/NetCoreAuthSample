@@ -30,8 +30,23 @@ namespace AuthSample
                 options.UseSqlServer(_configuration.GetConnectionString("AuthSampleDb"))
                 );
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                // 密碼最小長度  (預設值:6)
+                options.Password.RequiredLength = 6;
+                // 密碼中允許最大重複字符數 (ex: "aaa123" ,"abbb123")  axabac 會過
+                options.Password.RequiredUniqueChars = 3;
+                // 至少使用非字母數字字符 (預設值: true)
+                options.Password.RequireNonAlphanumeric = false;
+                // 密碼是否包含小寫 (預設值: true)
+                options.Password.RequireLowercase = false;
+                // 密碼是否包含大寫 (預設值: true)
+                options.Password.RequireUppercase = false;
+            });
+
             services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddEntityFrameworkStores<AppDbContext>();
+
 
             services.AddMvc();
         }
@@ -43,8 +58,8 @@ namespace AuthSample
             {
                 app.UseDeveloperExceptionPage();
             }
-            // �i�ѦҡA�]���S�]�w�A�Ȯɤ��ϥ�
-            // [[�p��@��] �b ASP.NET Core MVC �ۭq ExceptionHandler | �n��D�p���{���Ʋz�p�� - �I����](https://www.dotblogs.com.tw/supershowwei/2021/04/14/185800)
+            // 可參考，因為沒設定，暫時不使用
+            // [[小菜一碟] 在 ASP.NET Core MVC 自訂 ExceptionHandler | 軟體主廚的程式料理廚房 - 點部落](https://www.dotblogs.com.tw/supershowwei/2021/04/14/185800)
             //else if (env.IsStaging() || env.IsProduction() || env.IsEnvironment("UAT"))
             //{
             //    app.UseExceptionHandler("/Error");

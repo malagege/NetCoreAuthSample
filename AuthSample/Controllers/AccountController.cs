@@ -33,11 +33,12 @@ namespace AuthSample.Controllers
                     Email = model.Email,
                 };
 
-                var result = await _userManger.CreateAsync(user);
+                var result = await _userManger.CreateAsync(user, model.Password);  // 第二個參數密碼要放，沒放不會檢核密碼規則
 
                 if (result.Succeeded)
                 {
-                    await _signInManger.SignInAsync(user, isPersistent: false);
+                    // isPersistent: 指出登入 Cookie 是否應該在關閉瀏覽器之後保存       參考: [SignInManager<TUser>.SignInAsync 方法 (Microsoft.AspNetCore.Identity) | Microsoft Docs](https://docs.microsoft.com/zh-tw/dotnet/api/microsoft.aspnetcore.identity.signinmanager-1.signinasync?view=aspnetcore-6.0)
+                    await _signInManger.SignInAsync(user, isPersistent: false); 
                     return RedirectToAction("index", "home");
                 }
 
