@@ -1,13 +1,9 @@
 ﻿@model RegisterViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-<html>
-    <head>
-        <title>註冊帳號</title>
-    </head>
-    <body>
+
         <!--[c# - Get all ModelState Errors on view - Stack Overflow](https://stackoverflow.com/questions/17580944/get-all-modelstate-errors-on-view)-->
-        <div asp-validation-summary="All" class="text-danger"></div>
+
 <form method="POST">
     <div>
         <label asp-for="Email"></label>
@@ -26,5 +22,3 @@
     </div>
     <button>送出</button>
 </form>
-    </body>
-</html>

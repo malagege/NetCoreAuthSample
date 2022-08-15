@@ -70,6 +70,11 @@ namespace AuthSample
 
             app.UseRouting();
 
+            // 當帳號沒有檢查到登入資料，請確認這兩個是否加入 Middleware
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();

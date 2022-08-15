@@ -1,22 +1,30 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+<!-- 需要 import Microsoft.AspNetCore.Identity 才能用 signInManager -->
 @using Microsoft.AspNetCore.Identity
 
+<!-- 注入 _signInManager -->
 @inject SignInManager<IdentityUser> _signInManager
 
 @{
 }
 
-
+<!--是否有登入帳號-->
 @if (_signInManager.IsSignedIn(User))
 {
-    <form method="post" asp-controller="home" asp-action="logout">
+    <!-- 用 Post 操作比較安全-->
+    <form method="post" asp-controller="account" asp-action="logout">
         @User.Identity.Name <button>登出</button>
     </form>
 }
 else
 {
-    <a asp-controller="account" asp-action="register">註冊</a>
+    <div>
+        <a asp-controller="account" asp-action="register">註冊</a>
+    </div>
+    <div>
+        <a asp-controller="account" asp-action="login">登入</a>
+    </div>
 }
     Index
