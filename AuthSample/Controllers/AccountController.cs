@@ -34,14 +34,24 @@ namespace AuthSample.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(LoginViewModel model)
+        public async Task<IActionResult> LoginAsync(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
                 var result = await _signInManger.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("index", "home"); // 登入後導回收頁
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        if (Url.IsLocalUrl(returnUrl))      //安全性驗證 returnUrl
+                        {
+                            return Redirect(returnUrl);
+                        }
+                    }
+                    else
+                    {
+                        return RedirectToAction("index", "home"); // 登入後導回收頁
+                    }
                 }
 
                 ModelState.AddModelError(string.Empty, "登入失敗，請重試");
