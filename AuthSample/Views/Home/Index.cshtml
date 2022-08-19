@@ -3,9 +3,10 @@
 *@
 <!-- 需要 import Microsoft.AspNetCore.Identity 才能用 signInManager -->
 @using Microsoft.AspNetCore.Identity
+@using AuthSample.Models
 
 <!-- 注入 _signInManager -->
-@inject SignInManager<IdentityUser> _signInManager
+@inject SignInManager<ApplicationUser> _signInManager
 
 @{
 }

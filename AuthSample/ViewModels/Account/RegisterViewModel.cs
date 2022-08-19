@@ -18,5 +18,8 @@ namespace AuthSample.ViewModels.Account
         [Display(Name = "確任密碼")]
         [Compare("Password", ErrorMessage = "兩次密碼不一致")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "城市")]
+        public string City { get; set; }
     }
 }

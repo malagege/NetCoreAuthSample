@@ -1,4 +1,5 @@
-﻿using AuthSample.ViewModels.Account;
+﻿using AuthSample.Models;
+using AuthSample.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -7,10 +8,10 @@ namespace AuthSample.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManger;
-        private readonly SignInManager<IdentityUser> _signInManger;
+        private readonly UserManager<ApplicationUser> _userManger;
+        private readonly SignInManager<ApplicationUser> _signInManger;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManger = userManager;
             _signInManger = signInManager;
@@ -72,10 +73,11 @@ namespace AuthSample.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser
+                var user = new ApplicationUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
+                    City = model.City,
                 };
 
                 var result = await _userManger.CreateAsync(user, model.Password);  // 第二個參數密碼要放，沒放不會檢核密碼規則
