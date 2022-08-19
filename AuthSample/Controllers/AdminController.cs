@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AuthSample.Controllers
@@ -20,6 +21,7 @@ namespace AuthSample.Controllers
             return View();
         }
 
+        #region 建立角色
         [HttpGet]
         public IActionResult CreateRole()
         {
@@ -41,7 +43,7 @@ namespace AuthSample.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("index", "home");
+                    return RedirectToAction("rolelist", "admin");
                 }
 
                 foreach(IdentityError error in result.Errors)
@@ -51,5 +53,14 @@ namespace AuthSample.Controllers
             }
             return View(model);
         }
+        #endregion
+
+        #region 角色清單
+        public IActionResult RoleList()
+        {
+            IQueryable<IdentityRole> roles = _roleManager.Roles;
+            return View(roles);
+        }
+        #endregion
     }
 }

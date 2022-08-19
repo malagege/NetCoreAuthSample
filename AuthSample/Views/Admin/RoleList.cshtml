@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Identity
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "RoleList";
+}
+@model IEnumerable<IdentityRole> 
+
+<h1>角色列表</h1>
+
+@if(Model.Any()){
+    <div>
+        <a asp-action="CreateRole" asp-controller="admin">建立角色</a>
+    </div>
+
+    foreach (var role in Model)
+    {
+        <div>
+            <div>
+                角色Id:@role.Id
+            </div>
+            <div>
+                角色名稱:@role.Name
+            </div>
+            <div>
+                <!-- 編輯/刪除-->
+            </div>
+            <hr>
+        </div>
+    }
+}else{
+    <div>
+        <div>尚未創建角色</div>
+    </div>
+    <div>
+        <a asp-action="CreateRole" asp-controller="admin">建立角色</a>
+    </div>
+}
