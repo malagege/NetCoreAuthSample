@@ -1,0 +1,22 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model AuthSample.ViewModels.Admin.EditRoleViewModel
+
+<h1>編輯角色</h1>
+
+<form method="post">
+    <div>
+        <input asp-for="Id" />
+    </div>
+    <div>
+        <input asp-for="RoleName" placeholder="角色名稱" />
+        <span asp-validation-for="RoleName"></span>
+    </div>
+    <div>
+        <button>更新</button>
+        <a asp-action="rolelist">取消</a>
+    </div>
+</form>
