@@ -19,4 +19,26 @@
         <button>更新</button>
         <a asp-action="rolelist">取消</a>
     </div>
+    <div>
+        <h3>該角色中的使用者</h3>
+        <hr />
+        <div>
+            @if (Model.Users.Any())
+            {
+                <ul>
+                    @foreach (string user in Model.Users)
+                   {
+                       <li>@user</li>
+                   }
+                </ul>
+            }
+            else
+            {
+                <h5>目前沒有使用者綁定</h5>
+            }
+        </div>
+        <div>
+            <!-- 添加使用者到角色裡面-->
+        </div>
+    </div>
 </form>

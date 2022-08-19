@@ -100,7 +100,7 @@ namespace AuthSample.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditRole(EditRoleViewModel model)
+        public async Task<IActionResult> EditRoleAsync(EditRoleViewModel model)
         {
             IdentityRole role =  await _roleManager.FindByIdAsync(model.Id);
 
