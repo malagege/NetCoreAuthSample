@@ -1,0 +1,18 @@
+﻿@using AuthSample.ViewModels.Admin
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "建立角色";
+}
+@model CreateRoleViewModel
+<form asp-action="CreateRole" method="post">
+ <div>
+     <label asp-for="RoleName"></label>
+     <input asp-for="RoleName" />
+     <span asp-validation-for="RoleName"></span>
+ </div>
+ <div>
+     <button>創建角色</button>
+ </div>
+</form>
