@@ -9,7 +9,7 @@
 
 <form method="post">
     <div>
-        <input asp-for="Id" />
+        <input asp-for="Id" disabled />
     </div>
     <div>
         <input asp-for="RoleName" placeholder="角色名稱" />
@@ -38,7 +38,7 @@
             }
         </div>
         <div>
-            <!-- 添加使用者到角色裡面-->
+            <a asp-action="EditUserInRole" asp-route-roleId="@Model.Id">添加/刪除使用者</a>
         </div>
     </div>
 </form>
