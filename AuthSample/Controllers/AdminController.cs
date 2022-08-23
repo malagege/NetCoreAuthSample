@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AuthSample.Controllers
@@ -236,6 +237,63 @@ namespace AuthSample.Controllers
         {
             var users = await _userManager.Users.ToListAsync();
             return View(users);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUserAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if(user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到ID為{id}的使用者";
+                return View("NotFound");
+            }
+            // 取得使用者聲明(claims)
+            IList<Claim> userClaims = await _userManager.GetClaimsAsync(user);
+            IList<string> userRole = await _userManager.GetRolesAsync(user);
+
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName,
+                City = user.City,
+                Claims = userClaims.Select(c => c.Value).ToArray(),
+                Roles = userRole,
+            };
+
+            return View(model);
+
+        }
+
+        public async Task<IActionResult> EditUserAsync(EditUserViewModel model) 
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(model.Id);
+
+            if(user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到ID為{model.Id}的使用者";
+                return View("NotFound");
+            }
+            else
+            {
+                user.Email = model.Email;
+                user.UserName = model.UserName;
+                user.City = model.City;
+
+                IdentityResult result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("userlist");
+                }
+
+                foreach(IdentityError error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(model);
+            }
         }
         #endregion
     }
