@@ -131,6 +131,33 @@ namespace AuthSample.Controllers
         }
         #endregion
 
+        #region 刪除角色
+        public async Task<IActionResult> DeleteRoleAsync(string id)
+        {
+            IdentityRole role = await _roleManager.FindByIdAsync(id);
+            if(role == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到ID為{id}的角色信息";
+            }
+            else
+            {
+                IdentityResult result = await _roleManager.DeleteAsync(role);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("RoleList");
+                }
+
+                foreach(var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+            }
+            return RedirectToAction("RoleList");
+
+        }
+        #endregion
+
         #region 角色加入使用者設定
         public async Task<IActionResult> EditUserInRoleAsync(string roleId)
         {
