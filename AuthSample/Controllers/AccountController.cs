@@ -90,6 +90,12 @@ namespace AuthSample.Controllers
 
                 if (result.Succeeded)
                 {
+                    //當前 admin 新增帳號，導回使用者清單
+                    if(_signInManger.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("userlist", "admin");
+                    }
+
                     // isPersistent: 指出登入 Cookie 是否應該在關閉瀏覽器之後保存       參考: [SignInManager<TUser>.SignInAsync 方法 (Microsoft.AspNetCore.Identity) | Microsoft Docs](https://docs.microsoft.com/zh-tw/dotnet/api/microsoft.aspnetcore.identity.signinmanager-1.signinasync?view=aspnetcore-6.0)
                     await _signInManger.SignInAsync(user, isPersistent: false); 
                     return RedirectToAction("index", "home");
