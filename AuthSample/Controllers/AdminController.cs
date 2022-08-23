@@ -230,5 +230,13 @@ namespace AuthSample.Controllers
         {
             return "Hello, Admin";
         }
+
+        #region 使用者管理
+        public async Task<IActionResult> UserListAsync()
+        {
+            var users = await _userManager.Users.ToListAsync();
+            return View(users);
+        }
+        #endregion
     }
 }

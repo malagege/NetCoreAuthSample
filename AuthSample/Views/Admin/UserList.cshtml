@@ -1,0 +1,37 @@
+﻿@using AuthSample.Models
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "使用者列表";
+}
+@model IEnumerable<ApplicationUser>
+
+<h1>使用者列表</h1>
+@if(Model.Any()){
+    <div>
+        <a asp-action="Register" asp-controller="Account">新增帳號</a>
+    </div>
+    foreach (var user in Model)
+    {
+        <div>
+            <div>
+                Id: @user.Id
+            </div>
+            <div>
+                @user.UserName
+            </div>
+            <div>
+                <!-- TODO: 編輯/刪除-->
+            </div>
+            <hr>
+        </div> 
+    }
+}else{
+    <div>
+        <a asp-action="Register" asp-controller="Account">新增帳號</a>
+    </div>
+    <div>
+        尚未有任何帳號
+    </div>
+}
