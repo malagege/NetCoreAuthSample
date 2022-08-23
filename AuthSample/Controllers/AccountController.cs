@@ -17,6 +17,12 @@ namespace AuthSample.Controllers
             _signInManger = signInManager;
         }
 
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+
         [HttpGet]
         public IActionResult Register()
         {

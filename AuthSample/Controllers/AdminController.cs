@@ -224,5 +224,11 @@ namespace AuthSample.Controllers
         }
 
         #endregion
+
+        [Authorize(Roles = "admin")]
+        public string TestCheckAdminRole()
+        {
+            return "Hello, Admin";
+        }
     }
 }
