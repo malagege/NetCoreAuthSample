@@ -295,6 +295,31 @@ namespace AuthSample.Controllers
                 return View(model);
             }
         }
+
+        public async Task<IActionResult> DeleteUserAsync(string id)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(id);
+
+            if( user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到ID為{id}的使用者";
+                return View("NotFound");
+            }
+            else
+            {
+                IdentityResult result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("UserList");
+                }
+                foreach(IdentityError error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return RedirectToAction("UserList");
+            }
+        }
         #endregion
     }
 }

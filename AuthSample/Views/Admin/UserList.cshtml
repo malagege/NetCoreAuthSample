@@ -23,6 +23,9 @@
             </div>
             <div>
                 <a asp-action="EditUser" asp-controller="Admin" asp-route-id="@user.Id">修改</a>
+                <form method="post" asp-action="DeleteUser" asp-route-id="@user.Id">
+                    <button>刪除</button>
+                </form>
             </div>
             <hr>
         </div> 
