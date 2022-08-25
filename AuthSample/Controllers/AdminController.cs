@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -16,11 +17,13 @@ namespace AuthSample.Controllers
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<AdminController> _logger;
 
-        public AdminController(RoleManager<IdentityRole> roleManager,UserManager<ApplicationUser> userManager)
+        public AdminController(RoleManager<IdentityRole> roleManager,UserManager<ApplicationUser> userManager,ILogger<AdminController> logger)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _logger = logger;
         }
         public IActionResult Index()
         {
@@ -142,15 +145,25 @@ namespace AuthSample.Controllers
             }
             else
             {
-                IdentityResult result = await _roleManager.DeleteAsync(role);
-                if (result.Succeeded)
+                try
                 {
-                    return RedirectToAction("RoleList");
-                }
+                    IdentityResult result = await _roleManager.DeleteAsync(role);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("RoleList");
+                    }
 
-                foreach(var error in result.Errors)
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+                catch (DbUpdateException ex)
                 {
-                    ModelState.AddModelError("", error.Description);
+                    _logger.LogError($"發生異常: {ex}");
+                    ViewBag.ErrorTitle = $"角色{role.Name} 正在被使用中...";
+                    ViewBag.ErrorMessage = $"無法刪除{role.Name}角色，因此角色中己存在帳號，如果想刪除此角色，請移除該角色帳號資料。";
+                    return View("Error");
                 }
 
             }
