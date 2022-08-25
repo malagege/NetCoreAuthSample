@@ -35,6 +35,7 @@ namespace AuthSample.Controllers
             return View("NotFound");
         }
 
+        [Route("Error")]
         public IActionResult Error()
         {
             // 獲取異常詳細資訊
