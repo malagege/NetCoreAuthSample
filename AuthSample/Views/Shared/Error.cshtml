@@ -1,0 +1,18 @@
+﻿@if (ViewBag.ErrorTitle == null)
+{
+    <h3>
+        程式發生不明錯誤，請回報給管理員
+    </h3>
+    <h5>請回報錯誤給管理員</h5>
+}
+else
+{
+    <h1>@ViewBag.ErrorTitle</h1>
+
+	<div>
+
+		<h6>@ViewBag.ErrorMessage</h6>
+
+	</div>
+
+}
