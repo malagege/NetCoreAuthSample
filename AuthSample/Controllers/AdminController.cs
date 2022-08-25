@@ -132,6 +132,7 @@ namespace AuthSample.Controllers
         #endregion
 
         #region 刪除角色
+        [HttpPost]
         public async Task<IActionResult> DeleteRoleAsync(string id)
         {
             IdentityRole role = await _roleManager.FindByIdAsync(id);
@@ -323,6 +324,7 @@ namespace AuthSample.Controllers
             }
         }
 
+        [HttpPost]
         public async Task<IActionResult> DeleteUserAsync(string id)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(id);
