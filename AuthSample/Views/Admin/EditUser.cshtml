@@ -40,4 +40,17 @@
             <a asp-action="ManagerUserRoles" asp-route-userId="@Model.Id">管理角色</a>
         </div>
     </div>
+    <div>
+        <h3>管理聲明(Claims)</h3>
+        <ul>
+        @foreach (string claim in Model.Claims)
+       {
+           <li>@claim</li>
+       }
+       </ul>
+       <div>
+           <a asp-action="ManagerUserClaims" asp-route-userId="@Model.Id">管理聲明</a>
+       </div>
+    </div>
+
 </form>

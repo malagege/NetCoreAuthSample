@@ -430,5 +430,76 @@ namespace AuthSample.Controllers
             return RedirectToAction("EditUser", new { Id = userId });
         }
         #endregion
+        #region 角色管理聲明
+        [HttpGet]
+        public async Task<IActionResult> ManagerUserClaimsAsync(string userId)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            if(user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到 ID 為{userId} 的使用者";
+                return View("NotFound");
+            }
+
+            // UserManager 服務中的 GetClaimAsync() 方法取得使用者當前所有聲明
+            IList<Claim> existingUserClaims = await _userManager.GetClaimsAsync(user);
+            var model = new UserClaimsViewModel
+            {
+                UserId = userId
+            };
+            foreach(Claim claim in ClaimsStore.AllClaims)
+            {
+                UserClaim userClaim = new UserClaim
+                {
+                    ClaimType = claim.Type,
+                };
+
+                // 如果使用者選中了聲明屬性，則設置 IsSelected 屬性為 true
+                if(existingUserClaims.Any(c => c.Type == claim.Type))
+                {
+                    userClaim.IsSelected = true;
+                }
+
+                model.Claims.Add(userClaim);
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ManagerUserClaimsAsync(UserClaimsViewModel model)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(model.UserId);
+
+            if(user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到 ID 為 {model.UserId} 的使用者";
+                return View("NotFound");
+            }
+
+            // 獲取所有使用者現有的聲明并刪除它們
+            IList<Claim> claims = await _userManager.GetClaimsAsync(user);
+            IdentityResult result = await _userManager.RemoveClaimsAsync(user, claims);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "無法刪除當前用戶的聲明");
+                return View(model);
+            }
+
+            // 添加頁面上選中的所有聲明資訊
+            result = await _userManager.AddClaimsAsync(user, 
+                model.Claims
+                    .Where( c => c.IsSelected)
+                    .Select( c => new Claim(c.ClaimType, c.ClaimType))
+                  );
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "無法向使用者添加選定的聲明");
+                return View(model);
+            }
+
+            return RedirectToAction("EditUser", new { Id = model.UserId });
+        }
+        #endregion
     }
 }
