@@ -84,3 +84,11 @@ else
          context.User.IsInRole("Admin") && context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == true.ToString()) || context.User.IsInRole("SuperManager")
     </div>
 }
+
+@if(  _signInManager.IsSignedIn(User) &&  (await authorizationService.AuthorizeAsync(User, "EditRolePolicy4")).Succeeded )
+{
+    <div>
+        含有 EditRolePolicy4 看的到<br>
+        <a asp-action="EditUser2" asp-controller="Admin" asp-route-userName="@User.Identity.Name">我的帳號</a>
+    </div>
+}

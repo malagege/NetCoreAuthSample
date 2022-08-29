@@ -1,5 +1,7 @@
 using AuthSample.CustomMiddlewares;
 using AuthSample.Models;
+using AuthSample.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -46,6 +48,9 @@ namespace AuthSample
                 options.Password.RequireUppercase = false;
             });
 
+            // 注冊一個 Handler，沒有注冊到不會錯，但這邊要注意
+            services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
+
             services.AddAuthorization(options =>
             {
             // 策略結合聲明授權
@@ -75,6 +80,12 @@ namespace AuthSample
                             return context.User.IsInRole("Admin") && context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == true.ToString()) || context.User.IsInRole("SuperManager");
                         })
                 );
+
+            options.AddPolicy("EditRolePolicy4",
+                    // policy 注冊自訂需求 requirement，記得注冊 Handler
+                    policy => policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement())
+                    );
+
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()

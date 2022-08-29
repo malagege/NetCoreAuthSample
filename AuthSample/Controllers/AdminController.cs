@@ -307,6 +307,34 @@ namespace AuthSample.Controllers
 
         }
 
+        [HttpGet]
+        [Authorize(Policy = "EditRolePolicy4")]
+        public async Task<IActionResult> EditUser2Async(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到ID為{userName}的使用者";
+                return View("NotFound");
+            }
+            // 取得使用者聲明(claims)
+            IList<Claim> userClaims = await _userManager.GetClaimsAsync(user);
+            IList<string> userRole = await _userManager.GetRolesAsync(user);
+
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName,
+                City = user.City,
+                Claims = userClaims,
+                Roles = userRole,
+            };
+
+            return View("editUser",model);
+
+        }
+
         public async Task<IActionResult> EditUserAsync(EditUserViewModel model) 
         {
             ApplicationUser user = await _userManager.FindByIdAsync(model.Id);
