@@ -68,6 +68,13 @@ namespace AuthSample
                                     .RequireClaim("Edit Role","True")
                                     .RequireRole("SuperManager")
                     );
+
+            options.AddPolicy("EditRolePolicy3",
+                    policy => policy.RequireAssertion(context =>
+                        {
+                            return context.User.IsInRole("Admin") && context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == true.ToString()) || context.User.IsInRole("SuperManager");
+                        })
+                );
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()

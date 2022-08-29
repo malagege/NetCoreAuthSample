@@ -76,3 +76,11 @@ else
         含有 EditRolePolicy2 看的到
     </div>
 }
+
+@if( (await authorizationService.AuthorizeAsync(User, "EditRolePolicy3")).Succeeded )
+{
+    <div>
+        含有 EditRolePolicy3 看的到<br>
+         context.User.IsInRole("Admin") && context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == true.ToString()) || context.User.IsInRole("SuperManager")
+    </div>
+}
