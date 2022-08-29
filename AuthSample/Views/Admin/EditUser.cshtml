@@ -28,4 +28,16 @@
         <button>更新</button>
         <a asp-action="userlist">取消</a>
     </div>
+    <div>
+        <h3>使用者的角色</h3>
+        <ul>
+            @foreach (string roles in Model.Roles)
+           {
+            <li>@roles</li>
+           }
+        </ul>
+        <div>
+            <a asp-action="ManagerUserRoles" asp-route-userId="@Model.Id">管理角色</a>
+        </div>
+    </div>
 </form>

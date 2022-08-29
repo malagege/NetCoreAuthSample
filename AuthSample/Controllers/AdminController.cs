@@ -363,5 +363,72 @@ namespace AuthSample.Controllers
             }
         }
         #endregion
+
+        #region 使用者設定角色
+        [HttpGet]
+        public async Task<IActionResult> ManagerUserRolesAsync(string userId)
+        {
+            ViewBag.userId = userId;
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到 ID 為 {userId} 的使用者";
+                return View("NotFound");
+            }
+            var model = new List<RolesInUserViewModel>();
+
+            foreach(IdentityRole role in _roleManager.Roles)
+            {
+                var roleInUserViewModel = new RolesInUserViewModel()
+                {
+                    RoleId = role.Id,
+                    RoleName = role.Name,
+                };
+
+                if(await _userManager.IsInRoleAsync(user, role.Name))
+                {
+                    roleInUserViewModel.IsSelected = true;
+                }
+                else
+                {
+                    roleInUserViewModel.IsSelected = false;
+                }
+
+                model.Add(roleInUserViewModel);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ManagerUserRolesAsync(IList<RolesInUserViewModel> model, string userId)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+            {
+                ViewBag.ErrorMessage = $"無法找到 ID 為 {userId} 的使用者";
+                return View("NotFound");
+            }
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+
+            // 移除當下 User 所有角色
+            IdentityResult result = await _userManager.RemoveFromRolesAsync(user, roles);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "無法刪除使用者角色資料");
+                return View(model);
+            }
+            // 查詢模型列表中被選中的 RoleName 并添加到使用者中
+            result = await _userManager.AddToRolesAsync(user, model.Where( m => m.IsSelected).Select( m => m.RoleName));
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "無法向使用者添加選定的角色");
+                return View(model);
+            }
+
+            return RedirectToAction("EditUser", new { Id = userId });
+        }
+        #endregion
     }
 }
