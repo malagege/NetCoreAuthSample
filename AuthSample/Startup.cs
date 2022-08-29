@@ -60,7 +60,7 @@ namespace AuthSample
                     policy => policy.RequireRole("Admin", "SuperManager")
                     );
                 options.AddPolicy("EditRolePolicy",
-                    policy => policy.RequireClaim("Edit User")
+                    policy => policy.RequireClaim("Edit User","True")
                     );
             });
 

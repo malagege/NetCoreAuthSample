@@ -299,7 +299,7 @@ namespace AuthSample.Controllers
                 Email = user.Email,
                 UserName = user.UserName,
                 City = user.City,
-                Claims = userClaims.Select(c => c.Value).ToArray(),
+                Claims = userClaims,
                 Roles = userRole,
             };
 
@@ -449,13 +449,14 @@ namespace AuthSample.Controllers
             };
             foreach(Claim claim in ClaimsStore.AllClaims)
             {
-                UserClaim userClaim = new UserClaim
+                UserClaim userClaim = new()
                 {
                     ClaimType = claim.Type,
                 };
 
                 // 如果使用者選中了聲明屬性，則設置 IsSelected 屬性為 true
-                if(existingUserClaims.Any(c => c.Type == claim.Type))
+                // 這邊反思是否要做判斷 ClaimValue
+                if(existingUserClaims.Any(c => c.Type == claim.Type && c.Value == "True"))
                 {
                     userClaim.IsSelected = true;
                 }
@@ -489,8 +490,7 @@ namespace AuthSample.Controllers
             // 添加頁面上選中的所有聲明資訊
             result = await _userManager.AddClaimsAsync(user, 
                 model.Claims
-                    .Where( c => c.IsSelected)
-                    .Select( c => new Claim(c.ClaimType, c.ClaimType))
+                    .Select( c => new Claim(c.ClaimType, c.IsSelected.ToString() , ClaimValueTypes.Boolean))
                   );
             if (!result.Succeeded)
             {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace AuthSample.ViewModels.Admin
 {
@@ -7,7 +8,7 @@ namespace AuthSample.ViewModels.Admin
     {
         public EditUserViewModel()
         {
-            Claims = new List<string>();
+            Claims = new List<Claim>();
             Roles = new List<string>();
         }
         public string Id { get; set; }
@@ -19,7 +20,7 @@ namespace AuthSample.ViewModels.Admin
 
         public string City { get; set; }
 
-        public IList<string> Claims { get; set; }
+        public IList<Claim> Claims { get; set; }
 
         public IList<string> Roles { get; set; }
     }
