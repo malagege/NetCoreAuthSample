@@ -50,6 +50,7 @@ namespace AuthSample
 
             // 注冊一個 Handler，沒有注冊到不會錯，但這邊要注意
             services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
+            services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
 
             services.AddAuthorization(options =>
             {
