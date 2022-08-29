@@ -46,6 +46,24 @@ namespace AuthSample
                 options.Password.RequireUppercase = false;
             });
 
+            services.AddAuthorization(options =>
+            {
+                // 策略結合聲明授權
+                options.AddPolicy("DeleteRolePolicy",
+                    policy => policy.RequireClaim("Delete Role")
+                    );
+                options.AddPolicy("AdminRolePolicy",
+                    policy => policy.RequireRole("Admin")
+                    );
+                // 策略結合多角色授權
+                options.AddPolicy("SuperAdminPolicy",
+                    policy => policy.RequireRole("Admin", "SuperManager")
+                    );
+                options.AddPolicy("EditRolePolicy",
+                    policy => policy.RequireClaim("Edit User")
+                    );
+            });
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     .AddEntityFrameworkStores<AppDbContext>();

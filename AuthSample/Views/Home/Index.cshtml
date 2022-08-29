@@ -3,10 +3,12 @@
 *@
 <!-- 需要 import Microsoft.AspNetCore.Identity 才能用 signInManager -->
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization
 @using AuthSample.Models
 
 <!-- 注入 _signInManager -->
 @inject SignInManager<ApplicationUser> _signInManager
+@inject IAuthorizationService authorizationService
 
 @{
 }
@@ -39,11 +41,31 @@ else
     Index
 
 
-<h3>權限判段</h3>
+<h3>權限判斷</h3>
 @if ( _signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
 {
     <div>
         角色 Admin 可以看到
     </div>
 }
+@*注意這邊 誇號是跟 await 用起來，才能用到 Succeeeded*@
+@if( (await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded )
+{
+    <div>
+        含有 EditRolePolicy 看的到
+    </div>
+}
 
+@if( (await authorizationService.AuthorizeAsync(User, "AdminRolePolicy")).Succeeded )
+{
+    <div>
+        含有 AdminRolePolicy 看的到
+    </div>
+}
+
+@if( (await authorizationService.AuthorizeAsync(User, "SuperAdminPolicy")).Succeeded )
+{
+    <div>
+        含有 SuperAdminPolicy 看的到
+    </div>
+}
