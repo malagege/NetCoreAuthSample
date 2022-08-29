@@ -48,19 +48,25 @@ namespace AuthSample
 
             services.AddAuthorization(options =>
             {
-                // 策略結合聲明授權
-                options.AddPolicy("DeleteRolePolicy",
-                    policy => policy.RequireClaim("Delete Role")
-                    );
-                options.AddPolicy("AdminRolePolicy",
+            // 策略結合聲明授權
+            options.AddPolicy("DeleteRolePolicy",
+                policy => policy.RequireClaim("Delete Role")
+                );
+            options.AddPolicy("AdminRolePolicy",
+                policy => policy.RequireRole("Admin")
+                );
+            // 策略結合多角色授權
+            options.AddPolicy("SuperAdminPolicy",
+                policy => policy.RequireRole("Admin", "SuperManager")
+                );
+            options.AddPolicy("EditRolePolicy",
+                policy => policy.RequireClaim("Edit User", "True")
+                );
+            //下面方法雖然方法連續呼叫，但全部符合就會通過
+            options.AddPolicy("EditRolePolicy2",
                     policy => policy.RequireRole("Admin")
-                    );
-                // 策略結合多角色授權
-                options.AddPolicy("SuperAdminPolicy",
-                    policy => policy.RequireRole("Admin", "SuperManager")
-                    );
-                options.AddPolicy("EditRolePolicy",
-                    policy => policy.RequireClaim("Edit User","True")
+                                    .RequireClaim("Edit Role","True")
+                                    .RequireRole("SuperManager")
                     );
             });
 

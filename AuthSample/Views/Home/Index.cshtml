@@ -69,3 +69,10 @@ else
         含有 SuperAdminPolicy 看的到
     </div>
 }
+
+@if( (await authorizationService.AuthorizeAsync(User, "EditRolePolicy2")).Succeeded )
+{
+    <div>
+        含有 EditRolePolicy2 看的到
+    </div>
+}
