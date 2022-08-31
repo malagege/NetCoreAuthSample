@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Authentication;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AuthSample.ViewModels.Account
 {
@@ -14,5 +16,9 @@ namespace AuthSample.ViewModels.Account
 
         [Display(Name = "記住密碼")]
         public bool RememberMe { get; set; }
+
+        // OAuth 需要參數 ReturnUrl、ExternalLogins
+        public string  ReturnUrl { get; set; }
+        public IList<AuthenticationScheme> ExternalLogins { get; set; }
     }
 }
