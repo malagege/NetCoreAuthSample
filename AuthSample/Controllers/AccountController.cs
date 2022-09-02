@@ -163,7 +163,7 @@ namespace AuthSample.Controllers
                     return View(model);
                 }
 
-                Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
                 if (result.Succeeded)
                 {
                     if (!string.IsNullOrEmpty(returnUrl))
@@ -177,7 +177,14 @@ namespace AuthSample.Controllers
                     {
                         return RedirectToAction("index", "home"); // 登入後導回收頁
                     }
+
                 }
+
+                // 使用者封鎖不讓使用者登入，但我建議可以不提示讓使用者知道，可發信通知使用者知道
+                //if (result.IsLockedOut)
+                //{
+                //    return View("AccountLocked");
+                //}
 
                 ModelState.AddModelError(string.Empty, "登入失敗，請重試");
             }
@@ -363,6 +370,12 @@ namespace AuthSample.Controllers
 
                     if(result.Succeeded)
                     {
+                        // 讓當前已封鎖使用者解除封鎖動作
+                        if ( await _userManager.IsLockedOutAsync(user))
+                        {
+                            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+                        }
+
                         return View("ResetPasswordConfirmation");
                     }
 

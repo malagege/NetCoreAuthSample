@@ -105,6 +105,10 @@ namespace AuthSample
             services.Configure<IdentityOptions>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
+                
+                // 預設帳號密碼輸入五次會封鎖15分鐘(封鎖時間預設是5分鐘)
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
