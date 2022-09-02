@@ -340,5 +340,43 @@ namespace AuthSample.Controllers
             }
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            if(token == null || email == null)
+            {
+                ModelState.AddModelError(string.Empty, "無效的連結");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPasswordAsync(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = await _userManager.FindByEmailAsync(model.Email);
+                if(user != null)
+                {
+                    IdentityResult result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+
+                    if(result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation");
+                    }
+
+                    foreach(IdentityError error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+                //防止爆力攻擊，不回傳錯誤原因
+                return View("ResetPasswordConfirmation");
+            }
+
+            return View(model);
+        }
     }
 }
