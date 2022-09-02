@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace AuthSample.Controllers
 {
@@ -192,6 +194,7 @@ namespace AuthSample.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterAsync(RegisterViewModel model)
         {
+            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
@@ -205,15 +208,19 @@ namespace AuthSample.Controllers
 
                 if (result.Succeeded)
                 {
+                    scope.Complete();
+                    string confirmationLink = await GenerateConfirmactionLinkAsync(user);
+                    _logger.LogInformation($"發送驗證信連結:{confirmationLink}");
+
                     //當前 admin 新增帳號，導回使用者清單
                     if(_signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
                         return RedirectToAction("userlist", "admin");
                     }
-
-                    // isPersistent: 指出登入 Cookie 是否應該在關閉瀏覽器之後保存       參考: [SignInManager<TUser>.SignInAsync 方法 (Microsoft.AspNetCore.Identity) | Microsoft Docs](https://docs.microsoft.com/zh-tw/dotnet/api/microsoft.aspnetcore.identity.signinmanager-1.signinasync?view=aspnetcore-6.0)
-                    await _signInManager.SignInAsync(user, isPersistent: false); 
-                    return RedirectToAction("index", "home");
+                    // 記得返回收驗證訊息
+                    ViewBag.ErrorTitle = "註冊成功";
+                    ViewBag.ErrorMessage = "已經發送一組驗證信，請進行驗證。";
+                    return View("Error");
                 }
 
                 foreach (var error in result.Errors)
@@ -224,6 +231,14 @@ namespace AuthSample.Controllers
 
             return View(model);
         }
+
+        private async Task<string> GenerateConfirmactionLinkAsync(ApplicationUser user)
+        {
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
+            return confirmationLink;
+        }
+
         /// <summary>
         /// 帳號登出
         /// 1. 登出
@@ -235,6 +250,34 @@ namespace AuthSample.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("index","home");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmailAsync(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("index", "home");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                _logger.LogInformation($"當前 {userId} 使用者驗證無效");
+                ViewBag.ErrorMessage = "當前使用者驗證無效";
+                return View("NotFound");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (result.Succeeded)
+            {
+                return View();
+            }
+
+            ViewBag.ErrorTitle = "您的信箱尚為進行驗證";
+            return View("Error");
         }
     }
 }

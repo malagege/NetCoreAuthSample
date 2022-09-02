@@ -109,7 +109,8 @@ namespace AuthSample
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddErrorDescriber<CustomIdentityErrorDescriber>()
-                    .AddEntityFrameworkStores<AppDbContext>();
+                    .AddEntityFrameworkStores<AppDbContext>()
+                    .AddDefaultTokenProviders();
 
 
             services.AddMvc();
