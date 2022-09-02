@@ -1,6 +1,7 @@
 ﻿using AuthSample.Models;
 using AuthSample.ViewModels.Account;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -278,6 +279,66 @@ namespace AuthSample.Controllers
 
             ViewBag.ErrorTitle = "您的信箱尚為進行驗證";
             return View("Error");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult ActiveUserEmail()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ActiveUserEmailAsync(EmailAddressViewModel model)
+        {
+            ApplicationUser user = await _userManager.FindByEmailAsync(model.Email);
+            
+            if(user != null)
+            {
+                if( !await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    string confirmactionLink = await GenerateConfirmactionLinkAsync(user);
+                    _logger.LogInformation($"發送驗證信連結:{confirmactionLink}");
+
+                    ViewBag.Message = "如果你在我們系統有注冊帳號，我們己經發送Email到您的信箱，請收驗證信進行啟用。";
+                    return View("ActiveUserEmailConfirmation", ViewBag.Message);
+                }
+            }
+            ViewBag.Message = "請確任信箱是否異常，無法給予信箱驗證信";
+            // 由於避免帳號被暴力攻擊，不回應任何錯誤訊息
+            return View("ActiveUserEmailConfirmation", ViewBag.Message);
+        }
+
+        [HttpGet]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgetPasswordAsync(EmailAddressViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // 用信箱查詢帳號
+                ApplicationUser user = await _userManager.FindByNameAsync(model.Email);
+                // 通過驗證才能用此功能
+                if( user != null && await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var passwordResetLink = Url.Action("ResetPassword", "Account", new { email = model.Email, token }, Request.Scheme);
+
+                    _logger.LogInformation($"發送驗證信連結:{passwordResetLink}");
+
+                    return View("ForgetPasswordConfirmation");
+                }
+                // 為了防暴力攻擊，不回應任何訊息
+                return View("ForgetPasswordConfirmation");
+            }
+            return View(model);
         }
     }
 }
