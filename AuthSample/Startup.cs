@@ -93,11 +93,13 @@ namespace AuthSample
             {
                 microsoftOptions.ClientId = _configuration["Authentication:Microsoft:ClientId"];
                 microsoftOptions.ClientSecret = _configuration["Authentication:Microsoft:ClientSecret"];
+                microsoftOptions.AccessDeniedPath = "/account/login"; 
             }).AddGitHub(githubOptions =>
             {
                 githubOptions.ClientId = _configuration["Authentication:Github:ClientId"];
                 githubOptions.ClientSecret = _configuration["Authentication:Github:ClientSecret"];
                 githubOptions.Scope.Add("user:email");
+                githubOptions.AccessDeniedPath = "/account/login";
             });
 
             services.Configure<IdentityOptions>(options =>
