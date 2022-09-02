@@ -100,6 +100,11 @@ namespace AuthSample
                 githubOptions.Scope.Add("user:email");
             });
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+            });
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     .AddEntityFrameworkStores<AppDbContext>();

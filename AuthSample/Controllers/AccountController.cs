@@ -145,9 +145,22 @@ namespace AuthSample.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginAsync(LoginViewModel model, string returnUrl)
         {
+            // 補上登入頁後的登入資訊
+            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                ApplicationUser user = await _userManager.FindByEmailAsync(model.Email);
+
+                // 沒有這一個判斷會走到「登入失敗，請重試」，注意這邊要做這個判斷，使用者才知道是什麼錯誤。
+                if (user != null & !user.EmailConfirmed &&
+                    await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    ModelState.AddModelError(string.Empty, "你的信箱尚為進行驗證");
+                    return View(model);
+                }
+
+                Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
                     if (!string.IsNullOrEmpty(returnUrl))
